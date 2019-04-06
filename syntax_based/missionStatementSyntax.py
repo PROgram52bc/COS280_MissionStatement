@@ -8,15 +8,11 @@ Noun.addToCollection("ideas", "warriors", "knowledge", "reproduction", "protecti
 
 class ProperNoun(LeafComponent):
     pass
-ProperNoun.addToCollection("America's National Park System", "San Diego Zoo", "American Red Cross", "the U.S. Fund for UNICEF")
-
-class SubjectivePronoun(LeafComponent):
-    pass
-SubjectivePronoun.addToCollection("we")
+ProperNoun.addToCollection("America's National Park System", "San Diego Zoo", "American Red Cross", "the U.S. Fund for UNICEF", "Donald Trump")
 
 class RelativePronoun(LeafComponent):
     pass
-RelativePronoun.addToCollection("that", "which", "of those who", "for those who")
+RelativePronoun.addToCollection("that", "which", "of those who", "for those who", "through those who")
 
 class SubordinateConjunction(LeafComponent):
     pass
@@ -60,7 +56,7 @@ class Statement(NodeComponent):
     pass
 Statement.addConstruct("to", VerbPhrase, NounPhrase, SubordinateClause)
 Statement.addConstruct("to", VerbPhrase, PrepositionalPhrase, "to", VerbPhrase, NounPhrase)
-Statement.addConstruct(SubjectivePronoun, VerbPhrase, NounPhrase, PrepositionalPhrase)
+Statement.addConstruct("we", VerbPhrase, NounPhrase, PrepositionalPhrase)
 
 
 if __name__ == "__main__":
