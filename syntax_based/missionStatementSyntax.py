@@ -58,5 +58,5 @@ Statement.addConstruct(PrepositionalPhrase)
 
 
 if __name__ == "__main__":
-    st = getRandom(Statement)
+    st = Statement.random()
     print(str(st))

@@ -1,3 +1,4 @@
+import random
 # Infrastructure classes
 class LanguageComponentMeta(type):
     def __new__(cls, clsname, bases, dct):
@@ -11,6 +12,42 @@ class LanguageComponent(metaclass=LanguageComponentMeta):
     def __init__(self, value=None, *args, **kwargs):
         # the actual value
         self.setValue(value)
+
+    @classmethod
+    def random(cls, noRepeat=True, usedValues=[]):
+        """ get a random element with values set recursively """
+        sequence = cls.bank
+        if len(sequence) == 0:
+            raise Exception("Can't get random value for {} when its bank is empty.".format(cls))
+        # choose a value to set to the instance
+        value = random.choice(sequence)
+        while noRepeat and value in usedValues:
+            value = random.choice(sequence)
+        usedValues.append(value)
+
+        def instantiate(element, usedValues=[]):
+            """ Try to instantiate a LanguageComponent subclass
+            if element is a string instance, return it. 
+            Otherwise, raise an exception. """
+            if isinstance(element, LanguageComponentMeta):
+                return element.random(True, usedValues)
+            elif isinstance(element, str):
+                return element
+            else:
+                raise Exception(
+                        "can't instantiate element {}! (has to be a string or a subclass of LanguageComponent)"
+                        .format(element, value))
+            
+        if isinstance(value, list):
+            # go through the list and instantiate when needed
+            instantiatedValues = []
+            for element in value:
+                instantiatedValues.append(instantiate(element,usedValues))
+            instance = cls(instantiatedValues)
+        else:
+            instance = cls(value)
+
+        return instance
 
     def validValue(self, value):
         # redefine this
@@ -38,8 +75,10 @@ class NodeComponent(LanguageComponent):
     """ a class representing a Node component in a language construct. e.g. a Sentence """
     # contains multiple lists of derived classes
     # e.g. [[Noun, Verb, Noun],[Noun, Verb, Adverb],...]
+    # can also include direct strings
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
 
     @classmethod
     def addConstruct(cls, *args):
@@ -52,7 +91,7 @@ class NodeComponent(LanguageComponent):
     def toHumanReadable(self, separator=" "):
         # Separate components by space by default
         if self.value:
-            return separator.join([l.__str__() for l in self.value])
+            return separator.join([str(l) for l in self.value])
         else:
             raise Exception("Cannot render human readable form of a {} without value".format(self.__class__.__name__))
 
