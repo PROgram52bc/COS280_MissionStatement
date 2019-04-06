@@ -21,14 +21,19 @@ class LanguageComponent(metaclass=LanguageComponentMeta):
             raise Exception("Can't get random value for {} when its bank is empty.".format(cls))
         # choose a value to set to the instance
         value = random.choice(sequence)
+        count = len(sequence)
+        # check repetition
         while noRepeat and value in usedValues:
             value = random.choice(sequence)
+            # prevent infinite loop
+            count -= 1
+            if count == 0:
+                break
         usedValues.append(value)
 
         def instantiate(element, usedValues=[]):
             """ Try to instantiate a LanguageComponent subclass
-            if element is a string instance, return it. 
-            Otherwise, raise an exception. """
+            otherwise, return it """
             if isinstance(element, LanguageComponentMeta):
                 return element.random(True, usedValues)
             elif isinstance(element, str):
@@ -79,7 +84,6 @@ class NodeComponent(LanguageComponent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
     @classmethod
     def addConstruct(cls, *args):
         cls.bank.append(list(args))
@@ -115,3 +119,7 @@ class LeafComponent(LanguageComponent):
         else:
             raise Exception("Cannot render human readable form of a {} without value".format(self.__class__.__name__))
 
+# class CommaSeparatedComponent(NodeComponent):
+#     def toHumanReadable(self, separator=", "):
+#         # Separate components by comma and a space
+#         return super().toHumanReadable(separator)
